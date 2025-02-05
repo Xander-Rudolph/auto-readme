@@ -18,14 +18,14 @@ runs:
   using: composite
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.8'  # Specify the Python version you need
+        python-version: '3.13' 
     
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install ollama  # Ensure this is compatible with your Ollama installation method
+        pip install ${{ github.action_path }}/requirements.txt
       
     - name: Run Python script
       env:
