@@ -1,0 +1,33 @@
+vname: 'Run Trivy scan - linux - with summary'
+author: 'xander-rudolph'
+branding:
+  icon: 'git-pull-request'
+  color: 'green'
+description: 'Checks a directory for any vulnerabilities and adds a step summary'
+inputs:
+  working_dir:
+    description: "Working path for scan"
+    required: false
+    default: ${{ github.workspace }}
+  output_format:
+    description: "Type of output file to return"
+    required: false
+    default: md
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Specify the Python version you need
+    
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install ollama  # Ensure this is compatible with your Ollama installation method
+      
+    - name: Run Python script
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+      run: python ${{ github.action_path }}/script.py
