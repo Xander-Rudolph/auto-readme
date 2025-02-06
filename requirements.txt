@@ -1,2 +1,2 @@
 # add required pip modules here
-requests
+requests>=2.26.0
