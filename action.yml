@@ -38,4 +38,4 @@ runs:
     - name: Add to summary
       shell: bash
       run: |
-        cat "${{ inputs.working_dir }}/readme.me" >> $GITHUB_STEP_SUMMARY
+        cat "${{ inputs.working_dir }}/readme.md" >> $GITHUB_STEP_SUMMARY
