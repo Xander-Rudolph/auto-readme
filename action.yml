@@ -37,5 +37,7 @@ runs:
 
     - name: Add to summary
       shell: bash
+      env:
+        GITHUB_WORKSPACE: ${{ inputs.working_dir }}
       run: |
-        cat "${{ inputs.working_dir }}/readme.md" >> $GITHUB_STEP_SUMMARY
+        cat "$GITHUB_WORKSPACE/readme.md" >> $GITHUB_STEP_SUMMARY
