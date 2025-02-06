@@ -34,3 +34,8 @@ runs:
         GITHUB_WORKSPACE: ${{ inputs.working_dir }}
         OUTPUT_FORMAT: ${{ inputs.output_format }}
       run: python ${{ github.action_path }}/script.py
+
+    - name: Add to summary
+      shell: bash
+      run: |
+        cat "${{ inputs.working_dir }}/readme.me" >> $GITHUB_STEP_SUMMARY
