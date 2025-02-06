@@ -1,9 +1,9 @@
-vname: 'Run Trivy scan - linux - with summary'
+name: 'Summarize all files in a repo'
 author: 'xander-rudolph'
 branding:
-  icon: 'git-pull-request'
+  icon: 'anchor'
   color: 'green'
-description: 'Checks a directory for any vulnerabilities and adds a step summary'
+description: 'Reads the whole repository to generate a readme.md file'
 inputs:
   working_dir:
     description: "Working path for scan"
@@ -25,7 +25,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install -r ${{ github.action_path }}/requirements.txt
       
     - name: Run Python script
