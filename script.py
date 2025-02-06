@@ -34,7 +34,8 @@ def call_ollama_api(model_name: str, prompt: str, api_url: str = "http://localho
         response = requests.post(api_url, headers=headers, data=json.dumps(payload))
         response.raise_for_status()
         parsedresponse = parse_ollama_response(response)
-        return parsedresponse.json()
+        # return parsedresponse.json()
+        return parsedresponse
 
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
