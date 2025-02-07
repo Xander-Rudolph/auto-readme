@@ -31,13 +31,13 @@ runs:
     - name: Run Python script
       shell: bash
       env:
-        GITHUB_WORKSPACE: ${{ inputs.working_dir }}
+        WORKING_DIRECTORY: ${{ inputs.working_dir }}
         OUTPUT_FORMAT: ${{ inputs.output_format }}
       run: python ${{ github.action_path }}/script.py
 
     - name: Add to summary
       shell: bash
       env:
-        GITHUB_WORKSPACE: ${{ inputs.working_dir }}
+        WORKING_DIRECTORY: ${{ inputs.working_dir }}
       run: |
-        cat "$GITHUB_WORKSPACE/readme.md" >> $GITHUB_STEP_SUMMARY
+        cat "$WORKING_DIRECTORY/readme.md" >> $GITHUB_STEP_SUMMARY

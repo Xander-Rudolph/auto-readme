@@ -13,6 +13,19 @@ def parse_ollama_response(response: str) -> dict:
                 print(f"Skipping invalid line: {line}. Error: {e}")
     return json_objects
 
+def parse_ollama_generate(response: str) -> str:
+    full_response = ""
+    # Split using both `splitlines()` and explicit `\n`
+    lines = response.text.splitlines() + response.text.split('\n')
+    for line in filter(bool, lines):  # Skip empty lines
+        try:
+            json_obj = json.loads(line)
+            if "response" in json_obj:
+                full_response += json_obj["response"]
+        except json.JSONDecodeError as e:
+            print(f"Skipping invalid line: {line}. Error: {e}")
+    return full_response
+
 def call_ollama_api(model_name: str, prompt: str, api_url: str = "http://localhost:11434/api/generate") -> dict:
     """
     Calls the Ollama API to generate text from a given model and prompt.
@@ -33,8 +46,9 @@ def call_ollama_api(model_name: str, prompt: str, api_url: str = "http://localho
     try:
         response = requests.post(api_url, headers=headers, data=json.dumps(payload))
         response.raise_for_status()
-        parsedresponse = parse_ollama_response(response)
+        # parsedresponse = parse_ollama_response(response)
         # return parsedresponse.json()
+        parsedresponse = parse_ollama_generate(response)
         return parsedresponse
 
     except requests.exceptions.RequestException as e:
@@ -85,17 +99,17 @@ def download_ollama_model(model_name: str, api_url: str = "http://localhost:1143
         print(f"An error occurred: {e}")
         raise {"error": str(e)}
 
-def summarize_repository(file_summaries):
+def analyze_summaries(file_summaries):
     # Run the command to get the summary from Ollama
     # model = "deepseek-r1"
     model = "deepseek-coder-v2"
+    # model = "llama3.1"
     download_ollama_model(model)
-    prompt_text = f"Summarize the following for a readme.md:\n{file_summaries}"
+    prompt_text = f"Using the following files, summarize the entire directory as a readme.md:\n{file_summaries}"
     result = call_ollama_api(model, prompt_text)
     return result
 
-def main():
-    folder_path = os.getenv('GITHUB_WORKSPACE')
+def summarize_folder(folder_path):
     summaries = {}
     CODE_FILE_EXTENSIONS = {
         # Web Development
@@ -197,21 +211,29 @@ def main():
             file_path = os.path.join(root, file)
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
-                    summary = f.read()
+                    content = f.read()
             except Exception as e:
                 print(f"Error reading {file_path}: {e}")
                 continue
 
-            if summary:
-                summaries[file_path] = summary
+            if content:
+                summaries[file_path] = f"```{file}\n{content}\n```"
 
+    return summaries
+
+def main():
+    folder_path = os.getenv('WORKING_DIRECTORY')
+    if not folder_path:
+        folder_path = os.curdir
+
+    summaries = summarize_folder(folder_path)
     # Get the repository-level summary from Ollama
-    repo_summary = summarize_repository(summaries)
+    repo_summary = analyze_summaries(summaries)
     if repo_summary:
         summary_file_path = os.path.join(folder_path, "readme.md")
         try:
             with open(summary_file_path, 'w', encoding='utf-8') as summary_file:
-                summary_file.write(summary)
+                summary_file.write(repo_summary)
             print(f"Summaries written to {summary_file_path}")
         except Exception as e:
             print(f"Error writing summary file: {e}")
